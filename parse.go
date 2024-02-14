@@ -3,6 +3,7 @@ package link
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -17,15 +18,31 @@ func Parse(r io.Reader) ([]Link, error) {
 	if err != nil {
 		return nil, err
 	}
+	//create slice of <a> nodes
 	nodes := linkNodes(doc)
 	var links []Link
 
+	//create Link object of each <a> node
 	for _, node := range nodes {
 		links = append(links, buildLink(node))
 		fmt.Println(node)
 	}
 
 	return links, nil
+}
+
+func text(n *html.Node) string {
+	if n.Type == html.TextNode {
+		return n.Data
+	}
+	if n.Type != html.ElementNode {
+		return ""
+	}
+	var ret string
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		ret += text(c) + " "
+	}
+	return strings.Join(strings.Fields(ret), " ")
 }
 
 func buildLink(n *html.Node) Link {
@@ -35,7 +52,7 @@ func buildLink(n *html.Node) Link {
 			ret.Href = attr.Val
 		}
 	}
-	ret.Text = "TODO: parse the text"
+	ret.Text = text(n)
 	return ret
 }
 
