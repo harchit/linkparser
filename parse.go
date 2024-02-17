@@ -1,7 +1,6 @@
 package link
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -25,7 +24,6 @@ func Parse(r io.Reader) ([]Link, error) {
 	//create a Link object of each <a> node
 	for _, node := range nodes {
 		links = append(links, buildLink(node))
-		fmt.Println(node)
 	}
 
 	return links, nil
@@ -67,15 +65,4 @@ func linkNodes(n *html.Node) []*html.Node {
 	}
 	return ret
 
-}
-
-func dfs(n *html.Node, padding string) {
-	msg := n.Data
-	if n.Type == html.ElementNode {
-		msg = "<" + msg + ">"
-	}
-	fmt.Println(padding, msg)
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		dfs(c, padding+" ")
-	}
 }
